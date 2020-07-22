@@ -17,22 +17,18 @@
 
 
 
-    <div class="victory-modal">
-        <h1>U LOST</h1>
-        <h2>ur time: <span><h3 class="timer"></h3></span></h2>
-        <h1>choose diff</h1>
-        <button onclick="setDifficulty(this)">Easy!</button>
-        <button onclick="setDifficulty(this)">Meduim!</button>
-        <button onclick="setDifficulty(this)">Hard!</button>    
-    </div>
 
- 
-        <table border="1">
+    <div class="game">
+        <h1></h1>
+        <div class="win-lose"><h1></h1></div>
+        <h3 class="timer">00:00</h3>
+        <h3 onclick="setDifficulty()" class="emoji"></h3>
+        <table oncontextmenu="return false">
             <tbody>
 
             </tbody>
         </table>
-  
+    </div>
 
     <script src="utils.js"></script>
     <script src="main.js"></script>

@@ -2,20 +2,27 @@
 var gBoard;
 var MINE = '<img src="images/landmine.jpg">';
 var NUM = '<img src="images/0.png"/>';
-
+var FLAG = '⛳'
+//TODO: CREATE A BETTER VICTORY
 var isFirstMove = true;
 var gGame = {
   numOfMines: 2,
   size: 4,
+  isOn:false,
+  isMarked:false
 };
+
+var emoji = '😀';
+var elHeader = document.querySelector(".win-lose").querySelector("h1")
 
 
 var timer;
 var seconds = 0;
 var minutes = 0;
-var timerHTML = document.querySelector('.timer');
+var timerHTML = document.querySelectorAll('.timer');
 
-function setDifficulty(elButton) {
+
+function setDifficulty(elButton = 'Easy!') {
   var difficulty = elButton.innerHTML;
 
   if (difficulty === 'Easy!') {
@@ -33,10 +40,18 @@ function setDifficulty(elButton) {
 
 
 function handleReset() {
+  gGame.isOn = false;
   isFirstMove = true
-  document.querySelector('.victory-modal').style.display = 'none';
+
+  elHeader.innerText = 'Mine-Sweeper'
+  emoji = '😀'
+
+  clearInterval(timer)
+
+  document.querySelector('.game').style.display = 'inline-block';
   document.querySelector('.intro').style.display = 'none';
-  timerHTML.innerText ='00:00';
+
+  timerHTML[0].innerText ='00:00';
  seconds = 0;
  minutes = 0;
 }
@@ -47,7 +62,9 @@ function initGame() {
   handleReset()
   buildBoard(gGame.size, gGame.size);
   printMines(gGame.numOfMines);
-  renderBoard(gBoard);
+  renderBoard(gBoard)
+  gGame.isOn = true;
+  console.log(gBoard);
 }
 
 function buildBoard(rows, cols) {
@@ -64,11 +81,12 @@ function buildBoard(rows, cols) {
 
 function renderBoard() {
   var strHTML = '';
+  document.querySelector('.emoji').innerHTML= emoji;
 
   for (var i = 0; i < gBoard.length; i++) {
     strHTML += `<tr>`;
     for (var j = 0; j < gBoard[i].length; j++) {
-      strHTML += `<td class="cell${i}-${j}" onclick="cellClicked(this,${i},${j})">${gBoard[i][j].content}</td>`;
+      strHTML += `<td><button class="cell${i}-${j}"onclick="cellClicked(this,${i},${j})"oncontextmenu="markCell(this, ${i},${j})">${gBoard[i][j].content}</button></td>`;
     }
     strHTML += `</tr>`;
   }
@@ -88,7 +106,9 @@ function printMines(numOfMines) {
 }
 
 function cellClicked(elCell, i, j) {
+  if (!gGame.isOn) return
   if (gBoard[i][j].isShown) return; // avoids clicking a shown number
+
   if (isFirstMove) {
     gameTimer() // makes sure the timer starts on click instead after 1 sec
      timer = setInterval(gameTimer,1000)
@@ -104,6 +124,11 @@ function cellClicked(elCell, i, j) {
   }
   
   elCell.querySelector('img').style.visibility = 'visible';
+
+  //checks if this move was the victorious one
+  if(checkVictory() === 2) {
+    console.log('you won');
+  } 
 }
 
 function printNeighbors(mat, rowsIdx, colsIdx) {
@@ -113,19 +138,22 @@ function printNeighbors(mat, rowsIdx, colsIdx) {
     for (var j = colsIdx - 1; j <= colsIdx + 1; j++) {
       if (j < 0 || j >= mat.length) continue;
       if (mat[i][j].content === MINE) continue;
+      //if (mat[i][j].isMarked === true) continue;
       else {
         gBoard[i][j].isShown = true;
         gBoard[i][j].content = NUM;
-        document
-          .querySelector(`.cell${i}-${j}`)
-          .querySelector('img').src = `images/${checkNeighbors(
-          gBoard,
-          i,
-          j
-        )}.png`;
-        document
-          .querySelector(`.cell${i}-${j}`)
-          .querySelector('img').style.visibility = 'visible';
+        if (!mat[i][j].isMarked){
+          document.querySelector(`.cell${i}-${j}`).querySelector('img').src =
+          `images/${checkNeighbors(
+           gBoard,
+           i,
+           j
+         )}.png`;
+         document
+           .querySelector(`.cell${i}-${j}`)
+           .querySelector('img').style.visibility = 'visible';
+        }
+       
       }
     }
   }
@@ -133,20 +161,23 @@ function printNeighbors(mat, rowsIdx, colsIdx) {
 
 function gameOver(elCell, row, col) {
   //elCell[row][col]  //TODO: make current cell have class called 'blow' which will have different img
+  gGame.isOn = false
   for (var i = 0; i < gBoard.length; i++) {
     for (var j = 0; j < gBoard[i].length; j++) {
-      if (gBoard[i][j].content === MINE)
+      if (gBoard[i][j].content === MINE && !gBoard[i][j].isMarked)
         document
           .querySelector(`.cell${i}-${j}`)
           .querySelector('img').style.visibility = 'visible';
     }
   }
   clearInterval(timer)
-  document.querySelector('.victory-modal').style.display = 'block'
-  console.log('game over');
+  document.querySelector('.emoji').innerHTML = '😡'
+  document.querySelector(".win-lose").querySelector("h1").innerHTML = 'Oh No! You Blew Up!'
 }
 
+
 function handleFirstClick(elCell, row, col) {
+  console.log(elCell);
   if (elCell.innerHTML === MINE) {
     //data
     gBoard[row][col].content = NUM;
@@ -166,14 +197,45 @@ function handleFirstClick(elCell, row, col) {
 }
 
 
+function markCell(elCell ,i ,j){
+    var cell=gBoard[i][j]
+    if(cell.isShown===true) return
+
+    gBoard[i][j].isMarked = true
+    if(cell.isMarked===true){
+      elCell.innerHTML = FLAG
+    }
+     //checks if this move was the victorious one
+  if(checkVictory()) {
+    console.log('you won');
+  } 
+} 
+
+
+
+
 function gameTimer() {
   seconds++;
-  timerHTML.innerText =
-    (minutes ? (minutes > 9 ? minutes : '0' + minutes) : '00') +
-    ':' +
-    (seconds > 9 ? seconds : '0' + seconds);
-  if (seconds >= 59) {
-    seconds = 0;
-    minutes++;
+    for (var i = 0; i < timerHTML.length; i++) {
+        timerHTML[i].innerText = (minutes ? (minutes > 9 ? minutes : '0' + minutes) : '00') +
+        ':' +
+        (seconds > 9 ? seconds : '0' + seconds);
+      if (seconds >= 59) {
+        seconds = 0;
+        minutes++;
+      }
+    }  
+}
+
+
+//TODO: CREATE A BETTER VICTORY
+function checkVictory(){
+  var count = 0
+  debugger
+  for (var i = 0; i < gBoard.length; i++) {
+    for (var j = 0; j < gBoard[i].length; j++) {
+      if(gBoard[i][j].content === MINE && gBoard[i][j].isMarked ) count++
+    }
   }
+  return count
 }
