@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mine-Sweeper!</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="intro">       
+        <h1>choose diff</h1>
+        <button onclick="setDifficulty(this)">Easy!</button>
+        <button onclick="setDifficulty(this)">Meduim!</button>
+        <button onclick="setDifficulty(this)">Hard!</button>
+    </div>
+
+
+
+    <div class="victory-modal">
+        <h1>U LOST</h1>
+        <h2>ur time: <span><h3 class="timer"></h3></span></h2>
+        <h1>choose diff</h1>
+        <button onclick="setDifficulty(this)">Easy!</button>
+        <button onclick="setDifficulty(this)">Meduim!</button>
+        <button onclick="setDifficulty(this)">Hard!</button>    
+    </div>
+
+ 
+        <table border="1">
+            <tbody>
+
+            </tbody>
+        </table>
+  
+
+    <script src="utils.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
