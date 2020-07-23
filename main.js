@@ -1,9 +1,11 @@
 'use strict';
 var gBoard;
-var MINE = '<img src="images/landmine.jpg">';
-var NUM = '<img src="images/0.png"/>';
-var FLAG = '⛳'
-//TODO: CREATE A BETTER VICTORY
+var MINE = '<img src="images/bomb.png">';
+var MINE_EXPLODE = '<img src="images/explosion.png"></img>'
+var NUM = '<img src="">';
+var FLAG = '🚩'
+
+//TODO: MAKE SURE THE INTRO IS SHOWS AFTER GAME STARTS
 var isFirstMove = true;
 var gGame = {
   numOfMines: 2,
@@ -12,9 +14,12 @@ var gGame = {
   isMarked:false
 };
 
-var emoji = '😀';
-var elHeader = document.querySelector(".win-lose").querySelector("h1")
 
+var elEmoji = document.querySelector('.emoji')
+
+var elHeader = document.querySelector(".win-lose").querySelector("h2")
+
+var gNumOfCells =0;
 
 var timer;
 var seconds = 0;
@@ -43,17 +48,15 @@ function handleReset() {
   gGame.isOn = false;
   isFirstMove = true
 
-  elHeader.innerText = 'Mine-Sweeper'
-  emoji = '😀'
-
+  elEmoji.innerText = '😀'
+  elHeader.innerText = ''
   clearInterval(timer)
-
-  document.querySelector('.game').style.display = 'inline-block';
-  document.querySelector('.intro').style.display = 'none';
 
   timerHTML[0].innerText ='00:00';
  seconds = 0;
  minutes = 0;
+
+ gNumOfCells = 0
 }
 
 
@@ -76,22 +79,26 @@ function buildBoard(rows, cols) {
       gBoard[i][j] = { isShown: false, content: NUM };
     }
   }
+  gNumOfCells = i*j
+  console.log(gNumOfCells);
 }
 
 
 function renderBoard() {
   var strHTML = '';
-  document.querySelector('.emoji').innerHTML= emoji;
+  strHTML += '<table oncontextmenu="return false"><tbody>'
+
 
   for (var i = 0; i < gBoard.length; i++) {
     strHTML += `<tr>`;
     for (var j = 0; j < gBoard[i].length; j++) {
-      strHTML += `<td><button class="cell${i}-${j}"onclick="cellClicked(this,${i},${j})"oncontextmenu="markCell(this, ${i},${j})">${gBoard[i][j].content}</button></td>`;
+      strHTML += `<td><button class="cell cell${i}-${j}"onclick="cellClicked(this,${i},${j})"oncontextmenu="markCell(this, ${i},${j})">${gBoard[i][j].content}</button></td>`;
     }
-    strHTML += `</tr>`;
+    strHTML += '</tr>';
   }
+strHTML +=   '</tbody></table>'
 
-  document.querySelector('tbody').innerHTML = strHTML;
+  document.querySelector('.mine-field').innerHTML = strHTML;
 }
 
 //sets the number of mines based on difficulty on random coors
@@ -116,6 +123,7 @@ function cellClicked(elCell, i, j) {
     handleFirstClick(elCell, i, j);
 
   } else if (elCell.innerHTML === MINE) {
+    elCell.innerHTML = MINE_EXPLODE
     gameOver(elCell, i, j);
 
   } else {
@@ -126,9 +134,8 @@ function cellClicked(elCell, i, j) {
   elCell.querySelector('img').style.visibility = 'visible';
 
   //checks if this move was the victorious one
-  if(checkVictory() === 2) {
-    console.log('you won');
-  } 
+  checkVictory()
+
 }
 
 function printNeighbors(mat, rowsIdx, colsIdx) {
@@ -139,10 +146,14 @@ function printNeighbors(mat, rowsIdx, colsIdx) {
       if (j < 0 || j >= mat.length) continue;
       if (mat[i][j].content === MINE) continue;
       //if (mat[i][j].isMarked === true) continue;
-      else {
+      
         gBoard[i][j].isShown = true;
         gBoard[i][j].content = NUM;
-        if (!mat[i][j].isMarked){
+        //<img src="images/0.png"/>
+        if(!mat[i][j].isMarked && checkNeighbors(gBoard,i,j) === 0){
+          document.querySelector(`.cell${i}-${j}`).classList.add("shown-empty-cell")
+          
+        } else if (!mat[i][j].isMarked){
           document.querySelector(`.cell${i}-${j}`).querySelector('img').src =
           `images/${checkNeighbors(
            gBoard,
@@ -154,7 +165,7 @@ function printNeighbors(mat, rowsIdx, colsIdx) {
            .querySelector('img').style.visibility = 'visible';
         }
        
-      }
+      
     }
   }
 }
@@ -171,8 +182,9 @@ function gameOver(elCell, row, col) {
     }
   }
   clearInterval(timer)
-  document.querySelector('.emoji').innerHTML = '😡'
-  document.querySelector(".win-lose").querySelector("h1").innerHTML = 'Oh No! You Blew Up!'
+  elEmoji.innerText = '😡'
+  elHeader.innerText = 'Oh No! You Blew Up!'
+  elHeader.style.color = 'crimson'
 }
 
 
@@ -198,6 +210,8 @@ function handleFirstClick(elCell, row, col) {
 
 
 function markCell(elCell ,i ,j){
+  if(!gGame.isOn) return
+  
     var cell=gBoard[i][j]
     if(cell.isShown===true) return
 
@@ -206,9 +220,7 @@ function markCell(elCell ,i ,j){
       elCell.innerHTML = FLAG
     }
      //checks if this move was the victorious one
-  if(checkVictory()) {
-    console.log('you won');
-  } 
+  checkVictory()
 } 
 
 
@@ -231,11 +243,19 @@ function gameTimer() {
 //TODO: CREATE A BETTER VICTORY
 function checkVictory(){
   var count = 0
-  debugger
   for (var i = 0; i < gBoard.length; i++) {
     for (var j = 0; j < gBoard[i].length; j++) {
-      if(gBoard[i][j].content === MINE && gBoard[i][j].isMarked ) count++
+       if(gBoard[i][j].content === MINE && gBoard[i][j].isMarked ) count++
+       else if(gBoard[i][j].content === NUM && gBoard[i][j].isShown ) count++
     }
   }
-  return count
+  count === gNumOfCells ? handleVictory() : null
+}
+
+
+function handleVictory() {
+  clearInterval(timer)
+
+  elEmoji.innerText = '😎'
+  elHeader.innerText = 'Hurray! You Have Cleared The Mines!'
 }
