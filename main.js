@@ -3,7 +3,15 @@ var gBoard;
 var MINE = '<img src="images/bomb.png">';
 var MINE_EXPLODE = '<img src="images/explosion.png"></img>'
 var NUM = '<img src="">';
-var FLAG = '🚩'
+var FLAG = '🚩';
+
+//sounds
+var EXPLOSION_SOUND = new Audio('sounds/explosion.mp3');
+var MAIN_MUSIC = new Audio('sounds/main-music.mp3');
+var VICTORY_SOUND = new Audio('sounds/cheer.wav');
+var GL_SOUND = new Audio('sounds/gl.wav')
+var FLAG_SOUND = new Audio('sounds/flag.flac')
+var SHOVEL_SOUND = new Audio('sounds/shovel.wav')
 
 var gGame = {
   numOfMines: 2,
@@ -23,16 +31,18 @@ var gTimerSeconds = 0;
 var gTimerMinutes = 0;
 
 function initGame() {
+  
   handleReset()
   buildBoard(gGame.size, gGame.size);
   printMines(gGame.numOfMines);
   renderBoard(gBoard)
+  
   gGame.isOn = true;
 }
 
 function setDifficulty(elButton = 'Easy!') {
   var difficulty = elButton.innerHTML;
-
+  MAIN_MUSIC.pause()
   if (difficulty === 'Easy!') {
     gGame.numOfMines = 2;
     gGame.size = 4;
@@ -40,6 +50,7 @@ function setDifficulty(elButton = 'Easy!') {
     gGame.numOfMines = 12;
     gGame.size = 8;
   } else if (difficulty === 'Hard!') {
+    GL_SOUND.play()
     gGame.numOfMines = 30;
     gGame.size = 12;
   }
@@ -48,6 +59,8 @@ function setDifficulty(elButton = 'Easy!') {
 
 
 function handleReset() {
+  MAIN_MUSIC = new Audio('sounds/main-music.mp3');
+  MAIN_MUSIC.pause()
   gGame.isOn = false;
   gGame.isFirstMove = true
 
@@ -109,25 +122,30 @@ function printMines(numOfMines) {
 }
 
 function cellClicked(ev,elCell, i, j) {
-
   switch(ev.which)
   {
       case 1:
           //left Click
-          if (!gGame.isOn) return
+          if (!gGame.isOn) return;
           if (gBoard[i][j].isShown) return; // avoids clicking a shown number
         
           if (gGame.isFirstMove) {
-            gameTimer() // makes sure the timer starts on click instead after 1 sec
-             gTimerInterval = setInterval(gameTimer,1000)
+            SHOVEL_SOUND.play();
+            gameTimer(); // makes sure the timer starts on click instead after 1 sec
+             gTimerInterval = setInterval(gameTimer,1000);
             gGame.isFirstMove = false;
             handleFirstClick(elCell, i, j);
-        
+
           } else if (elCell.innerHTML === MINE) {
             elCell.innerHTML = MINE_EXPLODE
+      
+            EXPLOSION_SOUND.volume = 0.1;
+            EXPLOSION_SOUND.play();
+            
             gameOver(elCell, i, j);
         
           } else {
+            SHOVEL_SOUND.play()
             gBoard[i][j].isShown = true;
             printNeighbors(gBoard, i, j);
           }
@@ -136,19 +154,21 @@ function cellClicked(ev,elCell, i, j) {
 
       break;
       case 2:
-        console.log();
           //middle Click
-          initGame()
+          MAIN_MUSIC.pause();
+          initGame();
       break;
       case 3:
         //right Click
-        markCell(elCell ,i ,j)
+        FLAG_SOUND.volume = 0.3;
+        FLAG_SOUND.play();
+        markCell(elCell ,i ,j);
           
       break;       
          
   }
   //checks if this move was the victorious one
-  checkVictory()
+  checkVictory();
 
 }
 
@@ -206,6 +226,7 @@ function printOnlyOne(rowsIdx, colsIdx) {
 function gameOver(elCell, row, col) {
   //elCell[row][col]  //TODO: make current cell have class called 'blow' which will have different img
   gGame.isOn = false
+  MAIN_MUSIC.pause()
   for (var i = 0; i < gBoard.length; i++) {
     for (var j = 0; j < gBoard[i].length; j++) {
       if (gBoard[i][j].content === MINE && !gBoard[i][j].isMarked)
@@ -223,6 +244,8 @@ function gameOver(elCell, row, col) {
 
 
 function handleFirstClick(elCell, row, col) {
+ MAIN_MUSIC.play()
+
   if (elCell.innerHTML === MINE) {
     //data
     gBoard[row][col].content = NUM;
@@ -296,6 +319,8 @@ function checkVictory(){
 
 function handleVictory() {
   gGame.isOn = false
+  MAIN_MUSIC.pause()
+  VICTORY_SOUND.play()
   clearInterval(gTimerInterval)
   elEmoji.style.animation = 'emojiMove 2s '
   elEmoji.innerText = '😎'
