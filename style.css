@@ -1,3 +1,7 @@
+* {
+  box-sizing: border-box;
+}
+
 body {
   color: #f1f1f1;
   font-size: 16px;
@@ -10,17 +14,18 @@ body {
   background: rgb(0 0 0 / 35%) url(images/under-sandet-2.jpg) no-repeat;
   background-size: cover;
   background-blend-mode: darken;
+  overflow: hidden;
 }
 
 h1 {
-  color: #e0dfdc;
+ animation:  tracking-in-contract-bck-bottom 1s;
   letter-spacing: 0.1em;
   text-shadow: 0 -1px 0 #fff, 0 1px 0 #2e2e2e, 0 2px 0 #2c2c2c, 0 3px 0 #2a2a2a,
     0 4px 0 #282828, 0 5px 0 #262626, 0 6px 0 #242424, 0 7px 0 #222,
     0 8px 0 #202020, 0 9px 0 #1e1e1e, 0 10px 0 #1c1c1c, 0 11px 0 #1a1a1a,
     0 12px 0 #181818, 0 13px 0 #161616, 0 14px 0 #141414, 0 15px 0 #121212,
     0 22px 30px rgba(0, 0, 0, 0.9);
-  color: #e0dfdc;
+    color: #ffd65c;
 }
 
 table {
@@ -31,8 +36,8 @@ table {
 
 img {
   visibility: hidden;
-  width: 1rem;
-  filter: hue-rotate(418deg);
+  width: 2rem;
+  filter: hue-rotate(0);
 }
 
 button {
@@ -40,75 +45,9 @@ button {
   outline: none;
 }
 
-.diff-btn {
-  background: #41533b;
-  background-image: -webkit-linear-gradient(top, #41533b, #7ca26f);
-  background-image: -moz-linear-gradient(top, #41533b, #7ca26f);
-  background-image: -ms-linear-gradient(top, #41533b, #7ca26f);
-  background-image: -o-linear-gradient(top, #41533b, #7ca26f);
-  background-image: linear-gradient(to bottom, #41533b, #7ca26f);
-  -webkit-border-radius: 20px;
-  -moz-border-radius: 20px;
-  border-radius: 20px;
-  color: #b8c4b4;
-  font-size: 15px;
-  font-weight: 600;
-  padding: 10px;
-  box-shadow: 1px 1px 20px 0px #000000;
-  -webkit-box-shadow: 1px 1px 20px 0px #000000;
-  -moz-box-shadow: 1px 1px 20px 0px #000000;
-  text-shadow: 3px 0px 6px #000000;
-  border: outset #9e9a75 3px;
-  text-decoration: none;
-  display: inline-block;
-  cursor: pointer;
-  text-align: center;
-}
-
-.diff-btn:hover {
-  border: inset #9e9a75 3px;
-  background: #41533b;
-  background-image: -webkit-linear-gradient(top, #41533b, #7ca26f);
-  background-image: -moz-linear-gradient(top, #41533b, #7ca26f);
-  background-image: -ms-linear-gradient(top, #41533b, #7ca26f);
-  background-image: -o-linear-gradient(top, #41533b, #7ca26f);
-  background-image: linear-gradient(to bottom, #41533b, #7ca26f);
-  -webkit-border-radius: 20px;
-  -moz-border-radius: 20px;
-  border-radius: 20px;
-  text-decoration: none;
-}
-
-.win-lose {
-  height: 20px;
-}
-.intro {
-  display: inline-block;
-  text-align: center;
-}
-
-.game {
-  min-width: 800px;
-  display: inline-block;
-  justify-content: center;
-  align-items: center;
-  margin: 50px 0;
-  background-color: rgb(48 48 48 / 48%);
-  padding: 25px ;
-  border-radius: 25px;
-
-}
-
-.cell {
-  font-size: 10px;
-}
-.emoji {
-  cursor: pointer;
-}
-
 td button {
-  min-width: 35px;
-  min-height: 35px;
+  min-width: 55px;
+  min-height: 55px;
   background: #41533b;
   background-image: -webkit-linear-gradient(top, #9fa597, #604439);
   background-image: -moz-linear-gradient(top, #9fa597, #604439);
@@ -143,39 +82,197 @@ td button:hover {
   transition: 1s ease-out;
 }
 
-.shown-empty-cell,
-.shown-empty-cell:hover {
-  background: #959794;
-  background-image: -webkit-linear-gradient(top, #f1f1f1, #a58429);
-  background-image: -moz-linear-gradient(top, #f1f1f1, #a58429);
-  background-image: -ms-linear-gradient(top, #f1f1f1, #a58429);
-  background-image: -o-linear-gradient(top, #f1f1f1, #a58429);
-  background-image: linear-gradient(to bottom, #f1f1f1, #a58429);
+.diff-btn {
+  background: #41533b;
+  background-image: -webkit-linear-gradient(top, #41533b, #7ca26f);
+  background-image: -moz-linear-gradient(top, #41533b, #7ca26f);
+  background-image: -ms-linear-gradient(top, #41533b, #7ca26f);
+  background-image: -o-linear-gradient(top, #41533b, #7ca26f);
+  background-image: linear-gradient(to bottom, #41533b, #7ca26f);
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  border-radius: 8px;
+  color: #f1e7c0;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 10px;
+  box-shadow: 1px 1px 20px 0px #000000;
+  -webkit-box-shadow: 1px 1px 20px 0px #000000;
+  -moz-box-shadow: 1px 1px 20px 0px #000000;
+  text-shadow: 3px 0px 6px #000000;
+  border: outset #9e9a75 3px;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+  text-align: center;
 }
 
-/* animation: start-game 5s 
-@keyframes start-game {
+.diff-btn:hover {
+  color: #ffff;
+  border: inset #9e9a75 3px;
+  background: #41533b;
+  background-image: -webkit-linear-gradient(top, #41533b, #7ca26f);
+  background-image: -moz-linear-gradient(top, #41533b, #7ca26f);
+  background-image: -ms-linear-gradient(top, #41533b, #7ca26f);
+  background-image: -o-linear-gradient(top, #41533b, #7ca26f);
+  background-image: linear-gradient(to bottom, #41533b, #7ca26f);
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.win-lose-text {
+  height: 20px;
+}
+.intro {
+  display: inline-block;
+  text-align: center;
+}
+
+.game {
+  width: 85%;
+  height: 750px;
+  display: inline-block;
+  justify-content: center;
+  align-items: center;
+  margin: 50px 0;
+  background-color: rgb(48 48 48 / 48%);
+  padding: 15px 50px 15px 0 ;
+  border-radius: 25px;
+
+}
+
+.mine-field {
+  animation: emojiMove 3s;
+}
+
+.cell {
+  font-size: 20px;
+}
+.emoji {
+  cursor: pointer;
+  font-size: 50px;
+}
+
+.shown-empty-cell,
+.shown-empty-cell:hover {
+	animation: flip-horizontal-bottom .3s cubic-bezier(0.455, 0.030, 0.515, 0.955) alternate-reverse both;      
+  border-radius: 0%;
+  background: #959794;
+  background-image: linear-gradient(to bottom, #201d1c , #685348);
+  border: inset #404040 3px;
+}
+
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+
+}
+
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* animations */
+@keyframes emojiMove {
   0%{ opacity: 0; transform: scale(.3); }
   50%{ opacity: 1; transform: scale(1.0); }
   70%{ transform: scale(0.9); }
   100%{ transform: scale(1); }
-  } */
+  }
 
-  * {
-    box-sizing: border-box;
-  }
-  
-  /* Create two equal columns that floats next to each other */
-  .column {
-    float: left;
-    width: 50%;
-    padding: 10px;
+ 
+/* ----------------------------------------------
+ * Generated by Animista on 2020-7-23 13:47:32
+ * Licensed under FreeBSD License.
+ * See http://animista.net/license for more info. 
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
 
+/**
+ * ----------------------------------------
+ * animation tracking-in-contract-bck-bottom
+ * ----------------------------------------
+ */
+ @-webkit-keyframes tracking-in-contract-bck-bottom {
+  0% {
+    letter-spacing: 1em;
+    -webkit-transform: translateZ(400px) translateY(300px);
+            transform: translateZ(400px) translateY(300px);
+    opacity: 0;
   }
-  
-  /* Clear floats after the columns */
-  .row:after {
-    content: "";
-    display: table;
-    clear: both;
+  40% {
+    opacity: 0.6;
   }
+  100% {
+    -webkit-transform: translateZ(0) translateY(0);
+            transform: translateZ(0) translateY(0);
+    opacity: 1;
+  }
+}
+@keyframes tracking-in-contract-bck-bottom {
+  0% {
+    letter-spacing: 1em;
+    -webkit-transform: translateZ(400px) translateY(300px);
+            transform: translateZ(400px) translateY(300px);
+    opacity: 0;
+  }
+  40% {
+    opacity: 0.6;
+  }
+  100% {
+    -webkit-transform: translateZ(0) translateY(0);
+            transform: translateZ(0) translateY(0);
+    opacity: 1;
+  }
+}
+
+
+
+@-webkit-keyframes rotate-90-horizontal-fwd {
+  0% {
+    -webkit-transform: rotateX(0);
+            transform: rotateX(0);
+  }
+  100% {
+    -webkit-transform: rotateX(90deg);
+            transform: rotateX(90deg);
+  }
+}
+@keyframes rotate-90-horizontal-fwd {
+  0% {
+    -webkit-transform: rotateX(0);
+            transform: rotateX(0);
+  }
+  100% {
+    -webkit-transform: rotateX(90deg);
+            transform: rotateX(90deg);
+  }
+}
+
+
+ @-webkit-keyframes flip-horizontal-bottom {
+  0% {
+    -webkit-transform: rotateX(0);
+            transform: rotateX(0);
+  }
+  100% {
+    -webkit-transform: rotateX(-180deg);
+            transform: rotateX(-180deg);
+  }
+}
+@keyframes flip-horizontal-bottom {
+  0% {
+    -webkit-transform: rotateX(0);
+            transform: rotateX(0);
+  }
+  100% {
+    -webkit-transform: rotateX(-180deg);
+            transform: rotateX(-180deg);
+  }
+}
+

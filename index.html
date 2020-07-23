@@ -6,11 +6,13 @@
     <title>Mine-Sweeper!</title>
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
+  <body onmousedown="cellClicked(event)">
     <div class="row game">
       <div class="column">
         <h1>Mine Sweeper!</h1>
-        <div class="win-lose"><h2></h2></div>
+        <p>Press the 'Middle Mouse Button' to restart.</p>
+        <div class="win-lose-text"><h2></h2></div>
+        <br>
         <h3 class="timer">00:00</h3>
 
         <button class="diff-btn" onclick="setDifficulty(this)">Easy!</button>
