@@ -1,7 +1,10 @@
 'use strict';
+
+//ENJOY THE CODE REVIEW AND HAVE A NICE DAY! :)
+
 var gBoard;
 var MINE = '<img src="images/bomb.png">';
-var MINE_EXPLODE = '<img src="images/explosion.png"></img>'
+var MINE_EXPLODE = '<img src="images/explosion.png"></img>';
 var NUM = '<img src="">';
 var FLAG = '🚩';
 
@@ -9,9 +12,9 @@ var FLAG = '🚩';
 var EXPLOSION_SOUND = new Audio('sounds/explosion.mp3');
 var MAIN_MUSIC = new Audio('sounds/main-music.mp3');
 var VICTORY_SOUND = new Audio('sounds/cheer.wav');
-var GL_SOUND = new Audio('sounds/gl.wav')
-var FLAG_SOUND = new Audio('sounds/flag.flac')
-var SHOVEL_SOUND = new Audio('sounds/shovel.wav')
+var GL_SOUND = new Audio('sounds/gl.wav');
+var FLAG_SOUND = new Audio('sounds/flag.flac');
+var SHOVEL_SOUND = new Audio('sounds/shovel.wav');
 
 var gGame = {
   numOfMines: 2,
@@ -22,8 +25,8 @@ var gGame = {
   numOfCells: 0    // storing the total number of cells to check if againts checkVictory()
 };
 
-var elEmoji = document.querySelector('.emoji')
-var elHeader = document.querySelector(".win-lose-text").querySelector("h2")
+var elEmoji = document.querySelector('.emoji');
+var elHeader = document.querySelector(".win-lose-text").querySelector("h2");
 var elTimer = document.querySelectorAll('.timer');
 
 var gTimerInterval;
@@ -32,17 +35,18 @@ var gTimerMinutes = 0;
 
 function initGame() {
   
-  handleReset()
+  handleReset();
   buildBoard(gGame.size, gGame.size);
   printMines(gGame.numOfMines);
-  renderBoard(gBoard)
+  renderBoard(gBoard);
   
   gGame.isOn = true;
 }
 
 function setDifficulty(elButton = 'Easy!') {
   var difficulty = elButton.innerHTML;
-  MAIN_MUSIC.pause()
+  MAIN_MUSIC.pause();
+
   if (difficulty === 'Easy!') {
     gGame.numOfMines = 2;
     gGame.size = 4;
@@ -50,31 +54,32 @@ function setDifficulty(elButton = 'Easy!') {
     gGame.numOfMines = 12;
     gGame.size = 8;
   } else if (difficulty === 'Hard!') {
-    GL_SOUND.play()
+    GL_SOUND.play();
     gGame.numOfMines = 30;
     gGame.size = 12;
   }
+
   initGame();
 }
 
 
 function handleReset() {
   MAIN_MUSIC = new Audio('sounds/main-music.mp3');
-  MAIN_MUSIC.pause()
+  MAIN_MUSIC.pause();
   gGame.isOn = false;
-  gGame.isFirstMove = true
+  gGame.isFirstMove = true;
 
-  elEmoji.innerText = '😀'
-  elEmoji.style.animation = ''
+  elEmoji.innerText = '😀';
+  elEmoji.style.animation = '';
 
-  elHeader.innerText = ''
-  clearInterval(gTimerInterval)
+  elHeader.innerText = '';
+  clearInterval(gTimerInterval);
 
   elTimer[0].innerText ='00:00';
  gTimerSeconds = 0;
  gTimerMinutes = 0;
 
- gGame.numOfCells = 0
+ gGame.numOfCells = 0;
 }
 
 
@@ -88,14 +93,13 @@ function buildBoard(rows, cols) {
       gBoard[i][j] = { isShown: false, content: NUM };
     }
   }
-  gGame.numOfCells = i*j
+  gGame.numOfCells = i*j;
 }
 
 
 function renderBoard() {
   var strHTML = '';
-  strHTML += '<table oncontextmenu="return false"><tbody>'
-
+  strHTML += '<table oncontextmenu="return false"><tbody>';
 
   for (var i = 0; i < gBoard.length; i++) {
     strHTML += `<tr>`;
@@ -104,7 +108,8 @@ function renderBoard() {
     }
     strHTML += '</tr>';
   }
-strHTML +=   '</tbody></table>'
+
+  strHTML +=   '</tbody></table>';
 
   document.querySelector('.mine-field').innerHTML = strHTML;
 
@@ -122,9 +127,15 @@ function printMines(numOfMines) {
 }
 
 function cellClicked(ev,elCell, i, j) {
-  switch(ev.which)
-  {
-      case 1:
+
+  if(ev.which === 2 ){   
+          //middle Click
+          MAIN_MUSIC.pause();
+          initGame();
+  }
+   else if(ev.target !== elCell)  return;  //avoids running all items below on clicks outside the game
+ 
+  if(ev.which===1){
           //left Click
           if (!gGame.isOn) return;
           if (gBoard[i][j].isShown) return; // avoids clicking a shown number
@@ -137,7 +148,7 @@ function cellClicked(ev,elCell, i, j) {
             handleFirstClick(elCell, i, j);
 
           } else if (elCell.innerHTML === MINE) {
-            elCell.innerHTML = MINE_EXPLODE
+            elCell.innerHTML = MINE_EXPLODE;
       
             EXPLOSION_SOUND.volume = 0.1;
             EXPLOSION_SOUND.play();
@@ -147,61 +158,47 @@ function cellClicked(ev,elCell, i, j) {
           } else {
             SHOVEL_SOUND.play()
             gBoard[i][j].isShown = true;
-            printNeighbors(gBoard, i, j);
+            printNeighbors(i, j);
           }
           
           elCell.querySelector('img').style.visibility = 'visible';
 
-      break;
-      case 2:
-          //middle Click
-          MAIN_MUSIC.pause();
-          initGame();
-      break;
-      case 3:
+        } else if(ev.which===3){
         //right Click
         FLAG_SOUND.volume = 0.3;
         FLAG_SOUND.play();
         markCell(elCell ,i ,j);
           
-      break;       
-         
+        }      
+           //checks if this move was the victorious one
+          checkVictory();
   }
-  //checks if this move was the victorious one
-  checkVictory();
-
-}
 
 
-function printNeighbors(mat, rowsIdx, colsIdx) {
+
+function printNeighbors(rowsIdx, colsIdx) {
   //loop on the negs, if mine - dont show , else show all negs
   for (var i = rowsIdx - 1; i <= rowsIdx + 1; i++) {
-    if (i < 0 || i >= mat.length) continue;
+    if (i < 0 || i >= gBoard.length) continue;
     for (var j = colsIdx - 1; j <= colsIdx + 1; j++) {
-      if (j < 0 || j >= mat.length) continue;
-      if (mat[i][j].content === MINE) continue;
-      if (mat[i][j].isMarked) continue;
+      if (j < 0 || j >= gBoard.length) continue;
+      if (gBoard[i][j].content === MINE) continue;
+      if (gBoard[i][j].isMarked) continue;
       
-      if(printOnlyOne(rowsIdx,colsIdx)) return
+      if(printOnlyOne(rowsIdx,colsIdx)) return;
 
       gBoard[i][j].isShown = true;
       gBoard[i][j].content = NUM;
 
-        if(!mat[i][j].isMarked && checkNeighbors(gBoard,i,j) === 0){
-          document.querySelector(`.cell${i}-${j}`).classList.add("shown-empty-cell")
+        if(!gBoard[i][j].isMarked && checkNeighbors(gBoard,i,j) === 0){
+          document.querySelector(`.cell${i}-${j}`).classList.add("shown-empty-cell");
           
         } else {
           document.querySelector(`.cell${i}-${j}`).querySelector('img').src =
-          `images/${checkNeighbors(
-           gBoard,
-           i,
-           j
-         )}.png`;
-         document
-           .querySelector(`.cell${i}-${j}`)
-           .querySelector('img').style.visibility = 'visible';
+          `images/${checkNeighbors(gBoard,i,j)}.png`;
+         document.querySelector(`.cell${i}-${j}`).querySelector('img').style.visibility = 'visible';
 
-           document.querySelector(`.cell${i}-${j}`).classList.add("shown-empty-cell")
+           document.querySelector(`.cell${i}-${j}`).classList.add("shown-empty-cell");
           }      
       
     }
@@ -217,34 +214,33 @@ function printOnlyOne(rowsIdx, colsIdx) {
    document.querySelector(`.cell${rowsIdx}-${colsIdx}`).classList.add("shown-empty-cell")
     gBoard[rowsIdx][colsIdx].isShown = true;
     gBoard[rowsIdx][colsIdx].content = NUM;
-   return true
+   return true;
  }
- return false
+ return false;
 }
 
 
-function gameOver(elCell, row, col) {
-  //elCell[row][col]  //TODO: make current cell have class called 'blow' which will have different img
-  gGame.isOn = false
-  MAIN_MUSIC.pause()
+function gameOver() {
+  gGame.isOn = false;
+
+  MAIN_MUSIC.pause();
+
   for (var i = 0; i < gBoard.length; i++) {
     for (var j = 0; j < gBoard[i].length; j++) {
       if (gBoard[i][j].content === MINE && !gBoard[i][j].isMarked)
-        document
-          .querySelector(`.cell${i}-${j}`)
-          .querySelector('img').style.visibility = 'visible';
+        document.querySelector(`.cell${i}-${j}`).querySelector('img').style.visibility = 'visible';
     }
   }
-  clearInterval(gTimerInterval)
-  elEmoji.style.animation = 'emojiMove 2s '
-  elEmoji.innerText = '😡'
-  elHeader.innerText = 'Oh No! You Blew Up!'
-  elHeader.style.color = 'crimson'
+  clearInterval(gTimerInterval);
+  elEmoji.style.animation = 'emojiMove 2s ';
+  elEmoji.innerText = '😡';
+  elHeader.innerText = 'Oh No! You Blew Up!';
+  elHeader.style.color = 'crimson';
 }
 
 
 function handleFirstClick(elCell, row, col) {
- MAIN_MUSIC.play()
+  MAIN_MUSIC.play();
 
   if (elCell.innerHTML === MINE) {
     //data
@@ -256,37 +252,35 @@ function handleFirstClick(elCell, row, col) {
 
     printMines(1);
     renderBoard();
-    printNeighbors(gBoard, row, col);
+    printNeighbors(row, col);
   } else {
     gBoard[row][col].isShown = true;
-    printNeighbors(gBoard, row, col);
+    printNeighbors(row, col);
     elCell.querySelector('img').style.visibility = 'visible';
   }
 }
 
 
 function markCell(elCell ,i ,j){
-  var cell=gBoard[i][j]
+  var cell=gBoard[i][j];
 
-  if(!gGame.isOn) return
-  if(cell.isShown) return
+  if(!gGame.isOn) return;
+  if(cell.isShown) return;
 
   if(cell.isMarked) {
-    cell.isMarked = false
-    elCell.innerHTML = cell.content
-    return
+    cell.isMarked = false;
+    elCell.innerHTML = cell.content;
+    return;
   }
 
-  cell.isMarked = true
+  cell.isMarked = true;
 
   if(cell.isMarked){
-    elCell.innerText = FLAG
+    elCell.innerText = FLAG;
   }
     //checks if this move was the victorious one
-  checkVictory()
+  checkVictory();
 } 
-
-
 
 
 function gameTimer() {
@@ -303,27 +297,26 @@ function gameTimer() {
     }  
 }
 
-
-
 function checkVictory(){
-  var count = 0
+  var count = 0;
   for (var i = 0; i < gBoard.length; i++) {
     for (var j = 0; j < gBoard[i].length; j++) {
-       if(gBoard[i][j].content === MINE && gBoard[i][j].isMarked ) count++
-       else if(gBoard[i][j].content === NUM && gBoard[i][j].isShown ) count++
+       if(gBoard[i][j].content === MINE && gBoard[i][j].isMarked ) count++;
+       else if(gBoard[i][j].content === NUM && gBoard[i][j].isShown ) count++;
     }
   }
-  count === gGame.numOfCells ? handleVictory() : null
+  count === gGame.numOfCells ? handleVictory() : null;
 }
 
 
 function handleVictory() {
-  gGame.isOn = false
-  MAIN_MUSIC.pause()
-  VICTORY_SOUND.play()
-  clearInterval(gTimerInterval)
-  elEmoji.style.animation = 'emojiMove 2s '
-  elEmoji.innerText = '😎'
-  elHeader.innerText = 'Hurray! You Have Cleared The Mines!'
-  elHeader.style.color = '#ffd65c'
+  gGame.isOn = false;
+  MAIN_MUSIC.pause();
+  VICTORY_SOUND.volume = 0.2;
+  VICTORY_SOUND.play();
+  clearInterval(gTimerInterval);
+  elEmoji.style.animation = 'emojiMove 2s ';
+  elEmoji.innerText = '😎';
+  elHeader.innerText = 'Hurray! You Have Cleared The Mines!';
+  elHeader.style.color = '#ffd65c';
 }

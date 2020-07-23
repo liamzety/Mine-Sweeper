@@ -8,6 +8,7 @@
     <link rel="shortcut icon" href="images/bomb.png">
   </head>
   <body onmousedown="cellClicked(event)">
+
     <div class="row game">
       <div class="column">
         <h1>Mine Sweeper!</h1>
@@ -15,12 +16,13 @@
         <div class="win-lose-text"><h2></h2></div>
         <br>
         <h3 class="timer">00:00</h3>
-
         <button class="diff-btn" onclick="setDifficulty(this)">Easy!</button>
         <button class="diff-btn" onclick="setDifficulty(this)">Meduim!</button>
         <button class="diff-btn" onclick="setDifficulty(this)">Hard!</button>
         <h3 onclick="setDifficulty()" class="emoji"></h3>
       </div>
+
+      
       <div class="column">
         <div class="mine-field"></div>
       </div>
